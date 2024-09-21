@@ -691,6 +691,14 @@ Or in an extended conversation:
 
 ;; ** Suffix to send prompt
 
+(defun gptel-prompt-minibuffer()
+  (read-string
+   (format "Ask %s: " (gptel-backend-name gptel-backend))
+   (and (use-region-p)
+		(buffer-substring-no-properties
+		 (region-beginning) (region-end))))
+  )
+
 (transient-define-suffix gptel--suffix-send (args)
   "Send ARGS."
   :key "RET"
@@ -711,11 +719,7 @@ Or in an extended conversation:
         (prompt
          (cond
           ((member "m" args)
-           (read-string
-            (format "Ask %s: " (gptel-backend-name gptel-backend))
-            (and (use-region-p)
-                 (buffer-substring-no-properties
-                  (region-beginning) (region-end)))))
+           (gptel-prompt-minibuffer))
           ((member "y" args)
            (unless (car-safe kill-ring)
              (user-error "`kill-ring' is empty!  Nothing to send"))
